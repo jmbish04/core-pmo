@@ -1,0 +1,31 @@
+---
+const { id } = Astro.params;
+// Fetch project details, docs, tasks
+---
+<html lang="en" class="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Project Dashboard - {id}</title>
+</head>
+<body class="bg-zinc-950 text-zinc-50 font-sans antialiased">
+    <main class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-4">Project Dashboard</h1>
+        <p class="mb-4">Project ID: {id}</p>
+        <div class="flex gap-4">
+            <a href={`/projects/${id}/orchestrate`} class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700">Open Orchestrator</a>
+        </div>
+
+        <div class="mt-8 grid grid-cols-2 gap-8">
+            <section class="bg-zinc-900 p-6 rounded-lg border border-zinc-800">
+                <h2 class="text-xl font-semibold mb-4">Linked Documents</h2>
+                {/* Render docs here */}
+            </section>
+            <section class="bg-zinc-900 p-6 rounded-lg border border-zinc-800">
+                <h2 class="text-xl font-semibold mb-4">Tasks</h2>
+                {/* Render tasks here */}
+            </section>
+        </div>
+    </main>
+</body>
+</html>

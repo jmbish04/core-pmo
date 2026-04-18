@@ -1,0 +1,36 @@
+---
+const { id } = Astro.params;
+---
+<html lang="en" class="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Orchestrator - {id}</title>
+</head>
+<body class="bg-zinc-950 text-zinc-50 font-sans antialiased h-screen flex flex-col overflow-hidden">
+    <header class="p-4 bg-zinc-900 border-b border-zinc-800 flex justify-between items-center">
+        <h1 class="text-xl font-bold">Orchestrator</h1>
+        <a href={`/projects/${id}`} class="text-zinc-400 hover:text-white text-sm">Back to Dashboard</a>
+    </header>
+    <main class="flex-1 flex overflow-hidden">
+        <!-- Markdown Viewer Left -->
+        <section class="w-1/2 p-6 overflow-y-auto border-r border-zinc-800">
+            <h2 class="text-2xl font-semibold mb-4">Document / Artifact Viewer</h2>
+            <div class="prose prose-invert max-w-none">
+                <!-- Render markdown here -->
+                <p>Select an artifact to view its markdown content.</p>
+            </div>
+        </section>
+
+        <!-- Assistant UI Chat Right -->
+        <section class="w-1/2 flex flex-col bg-zinc-900/50">
+            <!-- React Island for Chat -->
+            <div id="chat-root" class="flex-1 h-full w-full relative">
+                <div class="absolute inset-0 flex items-center justify-center text-zinc-500">
+                    Agent Chat Interface Placeholder (Requires client:load)
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -40,36 +40,36 @@ export function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background">
+    <header className="top-0 bg-background sticky z-50 w-full">
       <div className="container-wrapper px-6 3xl:fixed:px-0">
-        <div className="flex h-(--header-height) items-center **:data-[slot=separator]:h-4! 3xl:fixed:container">
-          <MobileNav className="flex lg:hidden" />
+        <div className="**:data-[slot=separator]:h-4! 3xl:fixed:container flex h-(--header-height) items-center">
+          <MobileNav className="lg:hidden flex" />
 
           <a
             href="/"
             className={cn(
               buttonVariants({ variant: "ghost", size: "icon" }),
-              "hidden size-8 lg:flex",
+              "size-8 lg:flex hidden",
             )}
           >
             <HomeIcon className="size-5" />
             <span className="sr-only">Home</span>
           </a>
 
-          <MainNav className="hidden lg:flex" />
+          <MainNav className="lg:flex hidden" />
 
-          <div className="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">
+          <div className="gap-2 md:flex-1 md:justify-end ml-auto flex items-center">
             <a
               href={siteConfig.links.github}
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
                 buttonVariants({ variant: "ghost", size: "sm" }),
-                "inline-flex h-8 items-center gap-2 shadow-none",
+                "h-8 gap-2 inline-flex items-center shadow-none",
               )}
             >
               <Icons.gitHub />
-              <span className="w-fit text-xs text-muted-foreground tabular-nums">{starCount}</span>
+              <span className="text-xs text-muted-foreground w-fit tabular-nums">{starCount}</span>
             </a>
 
             <Separator orientation="vertical" className="my-auto" />

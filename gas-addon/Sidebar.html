@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+  <head>
+    <base target="_top" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        background-color: #09090b;
+        color: #ededed;
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+  <body class="p-4">
+    <h2 class="text-xl font-bold mb-4">Colby PMO</h2>
+    <div id="app">
+      <div id="loading" class="text-sm">Loading project status...</div>
+      <div id="content" class="hidden">
+        <p id="status-msg" class="text-sm text-gray-400 mb-4"></p>
+        <button
+          id="analyze-btn"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-2 hidden w-full"
+        >
+          Analyze Document
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE = "https://your-worker-url.workers.dev/api"; // Replace with actual worker URL
+
+      function showContent(hasProject) {
+        document.getElementById("loading").classList.add("hidden");
+        document.getElementById("content").classList.remove("hidden");
+
+        if (hasProject) {
+          document.getElementById("status-msg").innerText = "Linked to active project.";
+          document.getElementById("analyze-btn").classList.remove("hidden");
+        } else {
+          document.getElementById("status-msg").innerText =
+            "Doc not linked. Go to the dashboard to link this document.";
+        }
+      }
+
+      function init() {
+        google.script.run
+          .withSuccessHandler(function (docId) {
+            fetch(`${API_BASE}/docs/${docId}/project`)
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.project) {
+                  showContent(true);
+                } else {
+                  showContent(false);
+                }
+              })
+              .catch((err) => {
+                showContent(false);
+              });
+          })
+          .getDocumentId();
+      }
+
+      document.getElementById("analyze-btn").addEventListener("click", () => {
+        document.getElementById("analyze-btn").innerText = "Analyzing...";
+        document.getElementById("analyze-btn").disabled = true;
+
+        google.script.run
+          .withSuccessHandler(function (text) {
+            fetch(`${API_BASE}/analyze`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ document_content: text }),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                // Simulated polling or direct response handling
+                google.script.run.appendAnalysisToDoc(
+                  "Analysis complete. Workflow ID: " + data.workflow_id,
+                );
+                document.getElementById("analyze-btn").innerText = "Analyze Document";
+                document.getElementById("analyze-btn").disabled = false;
+              });
+          })
+          .getDocumentText();
+      });
+
+      window.onload = init;
+    </script>
+  </body>
+</html>

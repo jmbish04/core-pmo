@@ -103,13 +103,13 @@ export function ComponentExample() {
 function CardExample() {
   return (
     <Example title="Card" className="items-center justify-center">
-      <Card className="relative w-full max-w-sm overflow-hidden pt-0">
-        <div className="absolute inset-0 z-30 aspect-video bg-primary opacity-50 mix-blend-color" />
+      <Card className="max-w-sm pt-0 relative w-full overflow-hidden">
+        <div className="inset-0 aspect-video bg-primary absolute z-30 opacity-50 mix-blend-color" />
         <img
           src="https://images.unsplash.com/photo-1604076850742-4c7221f3101b?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt="Photo by mymind on Unsplash"
           title="Photo by mymind on Unsplash"
-          className="relative z-20 aspect-video w-full object-cover brightness-60 grayscale"
+          className="aspect-video relative z-20 w-full object-cover brightness-60 grayscale"
         />
         <CardHeader>
           <CardTitle>Observability Plus is replacing Monitoring</CardTitle>
@@ -168,7 +168,7 @@ function FormExample() {
 
   return (
     <Example title="Form">
-      <Card className="w-full max-w-md">
+      <Card className="max-w-md w-full">
         <CardHeader>
           <CardTitle>User Information</CardTitle>
           <CardDescription>Please fill in your details below</CardDescription>
@@ -408,7 +408,7 @@ function FormExample() {
         <CardContent>
           <form>
             <FieldGroup>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="gap-4 grid grid-cols-2">
                 <Field>
                   <FieldLabel htmlFor="small-form-name">Name</FieldLabel>
                   <Input id="small-form-name" placeholder="Enter your name" required />
@@ -471,11 +471,11 @@ function FormExample() {
 
 function ExampleWrapper({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div className="w-full bg-background">
+    <div className="bg-background w-full">
       <div
         data-slot="example-wrapper"
         className={cn(
-          "mx-auto grid min-h-screen w-full max-w-5xl min-w-0 content-center items-start gap-8 p-4 pt-2 sm:gap-12 sm:p-6 md:grid-cols-2 md:gap-8 lg:p-12 2xl:max-w-6xl",
+          "max-w-5xl min-w-0 gap-8 p-4 pt-2 sm:gap-12 sm:p-6 md:grid-cols-2 md:gap-8 lg:p-12 2xl:max-w-6xl mx-auto grid min-h-screen w-full content-center items-start",
 
           className,
         )}
@@ -499,7 +499,7 @@ function Example({
     <div
       data-slot="example"
       className={cn(
-        "mx-auto flex w-full max-w-lg min-w-0 flex-col gap-1 self-stretch lg:max-w-none",
+        "max-w-lg min-w-0 gap-1 lg:max-w-none mx-auto flex w-full flex-col self-stretch",
         containerClassName,
       )}
       {...props}
@@ -508,7 +508,7 @@ function Example({
       <div
         data-slot="example-content"
         className={cn(
-          "flex min-w-0 flex-1 flex-col items-start gap-6 border border-dashed bg-background p-4 text-foreground sm:p-6 *:[div:not([class*='w-'])]:w-full",
+          "min-w-0 gap-6 bg-background p-4 text-foreground sm:p-6 flex flex-1 flex-col items-start border border-dashed *:[div:not([class*='w-'])]:w-full",
           className,
         )}
       >

@@ -6,7 +6,7 @@ export function MainNav({ className, ...props }: React.ComponentProps<"nav">) {
   return (
     <nav
       aria-label="Main navigation"
-      className={cn("flex items-center gap-2", className)}
+      className={cn("gap-2 flex items-center", className)}
       {...props}
     >
       {siteConfig.navItems.map((item) => {
