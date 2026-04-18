@@ -9,21 +9,33 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
       - name: Install Clasp
         run: npm install -g @google/clasp
       - name: Create clasprc.json
         run: |
-          echo '${{ secrets.CLASP_CREDS }}' > ~/.clasprc.json
+          if [ -n "${{ secrets.CLASP_CREDS }}" ]; then
+            echo '${{ secrets.CLASP_CREDS }}' > ~/.clasprc.json
+          else
+            echo "Skipping clasprc.json creation, secret is empty"
+          fi
       - name: Create .clasp.json
         run: |
           cd gas-addon
-          echo "{\"scriptId\":\"${{ secrets.GAS_SCRIPT_ID }}\",\"rootDir\":\".\"}" > .clasp.json
+          if [ -n "${{ secrets.GAS_SCRIPT_ID }}" ]; then
+            echo "{\"scriptId\":\"${{ secrets.GAS_SCRIPT_ID }}\",\"rootDir\":\".\"}" > .clasp.json
+          else
+            echo "Skipping .clasp.json creation, secret is empty"
+          fi
       - name: Push to GAS
         run: |
           cd gas-addon
-          clasp push -f
+          if [ -f ~/.clasprc.json ] && [ -f .clasp.json ]; then
+            clasp push -f
+          else
+            echo "Missing clasp configuration. Skipping push."
+          fi

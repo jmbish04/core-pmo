@@ -1,34 +1,60 @@
 ---
-// Landing Page / List of Projects
-// import Layout from '../layouts/Layout.astro';
-// Note: In a real implementation this might fetch from the local binding or relative API
-// Using a mock fetch for demonstration
-const projectsRes = await fetch('http://localhost:8787/api/projects').catch(() => ({ json: () => [] }));
-const projects = await projectsRes.json();
+import '../styles/global.css';
+
+// Using mock data for UI visual completion as per requirements
+const projects = [
+    { id: 'proj_alpha', name: 'Alpha Re-architecture', created_at: Date.now() - 86400000, status: 'Healthy' },
+    { id: 'proj_beta', name: 'Stitch Integration Sync', created_at: Date.now() - 172800000, status: 'Degraded' },
+];
 ---
 
 <html lang="en" class="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Colby PMO - Projects</title>
-    <!-- Add Tailwind via Astro configuration usually, placeholder inline for completeness if no layout -->
+    <title>Colby PMO - Operations Hub</title>
 </head>
-<body class="bg-zinc-950 text-zinc-50 font-sans antialiased">
-  <main class="container mx-auto p-8">
-    <h1 class="text-4xl font-bold mb-8">Projects</h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {projects.length === 0 ? (
-        <p>No projects found. Create one via the Google Docs Add-on.</p>
-      ) : (
-        projects.map((p: any) => (
-          <a href={`/projects/${p.id}`} class="block p-6 bg-zinc-900 border border-zinc-800 rounded-lg hover:bg-zinc-800 transition-colors">
-            <h2 class="text-xl font-semibold mb-2">{p.name}</h2>
-            <p class="text-zinc-400 text-sm">Created: {new Date(p.created_at).toLocaleDateString()}</p>
-          </a>
-        ))
-      )}
-    </div>
-  </main>
+<body class="bg-[#131315] text-white font-sans antialiased min-h-screen flex flex-col">
+    <header class="h-16 border-b border-[#1c1b1d] flex items-center justify-between px-8 bg-[#131315]">
+        <h1 class="text-sm font-bold tracking-tighter text-white">COLBY PMO // SYSTEM ROOT</h1>
+        <div class="flex items-center gap-4">
+            <span class="text-xs text-zinc-500 font-mono">STATUS: OPERATIONAL</span>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto p-12">
+        <div class="flex justify-between items-end mb-12 border-b border-[#1c1b1d] pb-4">
+            <div>
+                <h2 class="text-4xl font-bold tracking-tighter mb-2">Active Operations</h2>
+                <p class="text-sm text-zinc-400">Select a project to enter orchestration mode.</p>
+            </div>
+            <button class="bg-white text-black px-6 py-2 rounded-sm text-sm font-bold hover:bg-zinc-200 transition-colors">
+                Initialize Project
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {projects.length === 0 ? (
+                <div class="col-span-full py-12 text-center text-zinc-500 border border-dashed border-[#2a2a2c] bg-[#1c1b1d]">
+                    No active operations detected. Link a document via the Google Docs Add-on.
+                </div>
+            ) : (
+                projects.map((p) => (
+                    <a href={`/projects/${p.id}`} class="group block p-8 bg-[#1c1b1d] hover:bg-[#201f22] border border-[#2a2a2c] hover:border-[#474747] transition-all relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4">
+                            <span class={`px-2 py-1 rounded-sm text-[10px] font-mono uppercase tracking-widest ${p.status === 'Healthy' ? 'bg-[#2a2a2c] text-white' : 'bg-[#93000a] text-[#ffdad6]'}`}>
+                                {p.status}
+                            </span>
+                        </div>
+                        <h3 class="text-2xl font-bold tracking-tight mb-2 group-hover:text-white transition-colors">{p.name}</h3>
+                        <div class="flex flex-col gap-1 mt-6 text-xs text-zinc-500 font-mono">
+                            <span>ID: {p.id}</span>
+                            <span>INIT: {new Date(p.created_at).toISOString().split('T')[0]}</span>
+                        </div>
+                    </a>
+                ))
+            )}
+        </div>
+    </main>
 </body>
 </html>

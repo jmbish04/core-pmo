@@ -23,8 +23,8 @@
     "db:seed:local": "npx wrangler d1 execute DB --local --file=src/backend/db/seed.sql",
     "db:seed:remote": "npx wrangler d1 execute DB --remote --file=src/backend/db/seed.sql",
     "migrate:local": "pnpm run db:generate && npx wrangler d1 migrations apply DB --local && pnpm run db:seed:local",
-    "migrate:remote": "pnpm run db:generate && npx wrangler d1 migrations apply DB --remote && pnpm run db:seed:remote",
-    "deploy": "pnpm run build && pnpm run migrate:remote && npx wrangler deploy",
+    "migrate:remote": "pnpm run db:generate && pnpm dlx wrangler@latest d1 migrations apply DB --remote",
+    "deploy": "pnpm run build && pnpm run migrate:remote && pnpm dlx wrangler@latest deploy",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
@@ -48,7 +48,8 @@
     "astro": "^5.18.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "drizzle-orm": "^0.33.0",
+    "drizzle-orm": "^0.45.2",
+    "drizzle-zod": "^0.8.3",
     "hono": "^4.12.9",
     "lucide-react": "^0.575.0",
     "react": "^19.2.4",
