@@ -14,8 +14,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install Clasp
-        run: npm install -g @google/clasp
+      - name: Install dependencies
+        run: |
+          cd gas-addon
+          npm ci
       - name: Create clasprc.json
         run: |
           if [ -n "${{ secrets.CLASP_CREDS }}" ]; then
@@ -35,7 +37,7 @@ jobs:
         run: |
           cd gas-addon
           if [ -f ~/.clasprc.json ] && [ -f .clasp.json ]; then
-            clasp push -f
+            npm run push
           else
             echo "Missing clasp configuration. Skipping push."
           fi
