@@ -11,6 +11,7 @@
     "type": "git",
     "url": "https://github.com/126colby/core-template-cfw-assets-astro-shadcn"
   },
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
