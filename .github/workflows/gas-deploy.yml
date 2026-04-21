@@ -41,7 +41,19 @@ jobs:
           fi
       - name: Build and Push to GAS
         run: |
-          if [ -f ~/.clasprc.json ] && [ -f gas-addon/.clasp.json ]; then
+          HAS_CLASPRC="false"
+          if [ -f ~/.clasprc.json ] || [ -f .clasprc.json ]; then
+            HAS_CLASPRC="true"
+          fi
+          
+          if [ "$HAS_CLASPRC" = "false" ]; then
+            echo "❌ Missing CLASPRC_JSON secret (this generates .clasprc.json)"
+          fi
+          if [ ! -f gas-addon/.clasp.json ]; then
+            echo "❌ Missing GAS_SCRIPT_ID secret (this generates gas-addon/.clasp.json)"
+          fi
+          
+          if [ "$HAS_CLASPRC" = "true" ] && [ -f gas-addon/.clasp.json ]; then
             pnpm run gas:build
             pnpm run gas:deploy
           else

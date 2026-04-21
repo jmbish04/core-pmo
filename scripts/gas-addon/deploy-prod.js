@@ -54,11 +54,28 @@ function deploy() {
   console.log('⚡ Updating deployment version...');
   run(`cd gas-addon && npx clasp deploy -i ${deployId} -d "PROD_WEB_APP"`);
 
+  const fs = require('fs');
+  const path = require('path');
+  let scriptId = 'UNKNOWN';
+  try {
+    // Determine the scriptId for the Edit URL
+    const claspJsonPath = path.resolve(__dirname, '../../gas-addon/.clasp.json');
+    if (fs.existsSync(claspJsonPath)) {
+      const parsed = JSON.parse(fs.readFileSync(claspJsonPath, 'utf8'));
+      if (parsed.scriptId) scriptId = parsed.scriptId;
+    }
+  } catch (e) {
+    // Ignore read errors
+  }
+
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
   console.log('\n-------------------------------------------------------------------');
   console.log('🎉 DEPLOYMENT SUCCESSFUL');
-  console.log(`🆔 Deployment Id: ${deployId}`);
-  console.log(`🔗 URL: https://script.google.com/macros/s/${deployId}/exec`);
+  console.log(`🆔 Web App Deployment Id: ${deployId}`);
+  console.log(`🔗 Web App URL: https://script.google.com/macros/s/${deployId}/exec`);
+  if (scriptId !== 'UNKNOWN') {
+    console.log(`✏️  Edit URL: https://script.google.com/d/${scriptId}/edit`);
+  }
   console.log(`⏱️  Time: ${elapsed}s`);
   console.log('-------------------------------------------------------------------\n');
 }
