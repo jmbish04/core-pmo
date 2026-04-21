@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -17,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd gas-addon
-          npm ci
+          pnpm install
       - name: Create clasprc.json
         run: |
           if [ -n "${{ secrets.CLASPRC_JSON }}" ]; then
@@ -37,7 +39,7 @@ jobs:
         run: |
           cd gas-addon
           if [ -f ~/.clasprc.json ] && [ -f .clasp.json ]; then
-            npm run push
+            pnpm run push
           else
             echo "Missing clasp configuration. Skipping push."
           fi
