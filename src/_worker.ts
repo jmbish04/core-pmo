@@ -8,7 +8,7 @@ import type { ExportedHandler } from "@cloudflare/workers-types";
 
 import type { Bindings } from "./backend/api/index";
 
-import honoApp from "./backend/api/index";
+import { app as honoApp } from "./backend/api/index";
 
 const handler: ExportedHandler<Bindings> = {
   async fetch(request, env, ctx) {

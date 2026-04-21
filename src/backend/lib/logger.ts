@@ -4,7 +4,6 @@
  */
 
 import { drizzle } from "drizzle-orm/d1";
-import { v4 as uuidv4 } from "uuid";
 
 import { system_logs } from "../db/schemas/logs/system_logs";
 
@@ -22,17 +21,18 @@ interface LogArgs {
  * Universal Logger Service instance.
  *
  * Provides static methods for standardized logging. Requires passing the D1 binding
- * to properly mirror logs into the system_logs table asynchronously using `c.executionCtx.waitUntil`
- * or by directly running the query asynchronously without awaiting (fire and forget).
+ * and ExecutionContext to properly mirror logs into the system_logs table asynchronously
+ * using `ctx.waitUntil`.
  */
 export class Logger {
   /**
    * Internal logging handler. Outputs to console and D1.
    *
    * @param db D1Database binding instance.
+   * @param ctx ExecutionContext for Cloudflare Workers.
    * @param args Log arguments containing level, module, message, and optional metadata.
    */
-  private static async log(db: D1Database | undefined, args: LogArgs) {
+  private static log(db: D1Database | undefined, ctx: ExecutionContext | undefined, args: LogArgs) {
     const { level, module, message, metadata } = args;
 
     // Output to console
@@ -42,24 +42,23 @@ export class Logger {
       metadata ? JSON.stringify(metadata) : "",
     );
 
-    // Dual output to D1 if DB is provided
-    if (db) {
+    // Dual output to D1 if DB and ctx are provided
+    if (db && ctx) {
       try {
         const orm = drizzle(db);
-        // We do not await this heavily to prevent blocking the main request path
-        // but for safety in serverless we should ideally use ctx.waitUntil if available.
-        orm
+        const insertPromise = orm
           .insert(system_logs)
           .values({
-            id: uuidv4(),
+            id: crypto.randomUUID(),
             level,
             module,
             message,
             metadata: metadata ? JSON.stringify(metadata) : null,
-            timestamp: Date.now(),
           })
           .run()
           .catch((e) => console.error("Failed to insert log into DB:", e));
+
+        ctx.waitUntil(insertPromise);
       } catch (error) {
         console.error("Logger D1 connection error:", error);
       }
@@ -70,35 +69,56 @@ export class Logger {
    * Logs an informational message.
    *
    * @param db D1Database binding.
+   * @param ctx ExecutionContext.
    * @param module Originating module name.
    * @param message Message content.
    * @param metadata Optional contextual data.
    */
-  static info(db: D1Database | undefined, module: string, message: string, metadata?: any) {
-    this.log(db, { level: "info", module, message, metadata });
+  static info(
+    db: D1Database | undefined,
+    ctx: ExecutionContext | undefined,
+    module: string,
+    message: string,
+    metadata?: any,
+  ) {
+    this.log(db, ctx, { level: "info", module, message, metadata });
   }
 
   /**
    * Logs a warning message.
    *
    * @param db D1Database binding.
+   * @param ctx ExecutionContext.
    * @param module Originating module name.
    * @param message Message content.
    * @param metadata Optional contextual data.
    */
-  static warn(db: D1Database | undefined, module: string, message: string, metadata?: any) {
-    this.log(db, { level: "warn", module, message, metadata });
+  static warn(
+    db: D1Database | undefined,
+    ctx: ExecutionContext | undefined,
+    module: string,
+    message: string,
+    metadata?: any,
+  ) {
+    this.log(db, ctx, { level: "warn", module, message, metadata });
   }
 
   /**
    * Logs an error message.
    *
    * @param db D1Database binding.
+   * @param ctx ExecutionContext.
    * @param module Originating module name.
    * @param message Message content.
    * @param metadata Optional contextual data.
    */
-  static error(db: D1Database | undefined, module: string, message: string, metadata?: any) {
-    this.log(db, { level: "error", module, message, metadata });
+  static error(
+    db: D1Database | undefined,
+    ctx: ExecutionContext | undefined,
+    module: string,
+    message: string,
+    metadata?: any,
+  ) {
+    this.log(db, ctx, { level: "error", module, message, metadata });
   }
 }

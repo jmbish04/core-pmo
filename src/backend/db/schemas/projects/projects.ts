@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 /**
  * @fileoverview Defines the projects schema and its Zod validation types.
  * This table acts as the parent object for all PMO data entities.
@@ -10,7 +11,9 @@ export const projects = sqliteTable("projects", {
   name: text("name").notNull(),
   github_repo_url: text("github_repo_url"),
   clickup_folder_id: text("clickup_folder_id"),
-  created_at: integer("created_at").notNull().default(Date.now()),
+  created_at: integer("created_at")
+    .notNull()
+    .default(sql`(unixepoch())`),
 });
 
 // Zod schemas

@@ -1,11 +1,13 @@
 ---
-import '../styles/global.css';
+import '/src/styles/global.css';
 
+// Using Astro.url to construct relative API paths instead of hardcoded localhost
 // Using mock data for UI visual completion as per requirements
-const projects = [
+const projectsRes = await fetch(new URL('/api/projects', Astro.url)).catch(() => ({ json: () => [
     { id: 'proj_alpha', name: 'Alpha Re-architecture', created_at: Date.now() - 86400000, status: 'Healthy' },
     { id: 'proj_beta', name: 'Stitch Integration Sync', created_at: Date.now() - 172800000, status: 'Degraded' },
-];
+] }));
+const projects = await projectsRes.json();
 ---
 
 <html lang="en" class="dark">
@@ -39,11 +41,11 @@ const projects = [
                     No active operations detected. Link a document via the Google Docs Add-on.
                 </div>
             ) : (
-                projects.map((p) => (
+                projects.map((p: any) => (
                     <a href={`/projects/${p.id}`} class="group block p-8 bg-[#1c1b1d] hover:bg-[#201f22] border border-[#2a2a2c] hover:border-[#474747] transition-all relative overflow-hidden">
                         <div class="absolute top-0 right-0 p-4">
                             <span class={`px-2 py-1 rounded-sm text-[10px] font-mono uppercase tracking-widest ${p.status === 'Healthy' ? 'bg-[#2a2a2c] text-white' : 'bg-[#93000a] text-[#ffdad6]'}`}>
-                                {p.status}
+                                {p.status || 'Healthy'}
                             </span>
                         </div>
                         <h3 class="text-2xl font-bold tracking-tight mb-2 group-hover:text-white transition-colors">{p.name}</h3>

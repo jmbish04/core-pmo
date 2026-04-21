@@ -7,7 +7,6 @@ import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { Hono } from "hono";
-import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
 import { documents } from "../../db/schemas/documents/documents";
@@ -23,13 +22,13 @@ const docsApp = new Hono<{ Bindings: Bindings }>();
  */
 docsApp.get("/:google_doc_id/project", async (c) => {
   const docId = c.req.param("google_doc_id");
-  Logger.info(c.env.DB, "api/docs", `Fetching project for doc: ${docId}`);
+  Logger.info(c.env.DB, c.executionCtx, "api/docs", `Fetching project for doc: ${docId}`);
 
   const db = drizzle(c.env.DB);
   const doc = await db.select().from(documents).where(eq(documents.google_doc_id, docId)).get();
 
   if (!doc) {
-    Logger.warn(c.env.DB, "api/docs", `Document not found: ${docId}`);
+    Logger.warn(c.env.DB, c.executionCtx, "api/docs", `Document not found: ${docId}`);
     return c.json({ error: "Document not found" }, 404);
   }
 
@@ -48,7 +47,7 @@ const linkDocSchema = z.object({
  * Links an existing Google Doc to a project, auto-incrementing the version.
  */
 docsApp.post("/link", zValidator("json", linkDocSchema), async (c) => {
-  Logger.info(c.env.DB, "api/docs", "Linking document to project");
+  Logger.info(c.env.DB, c.executionCtx, "api/docs", "Linking document to project");
   const db = drizzle(c.env.DB);
   const { project_id, google_doc_id, doc_type } = c.req.valid("json");
 
@@ -64,7 +63,7 @@ docsApp.post("/link", zValidator("json", linkDocSchema), async (c) => {
     await db
       .insert(documents)
       .values({
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         project_id,
         google_doc_id,
         doc_type,
@@ -72,10 +71,12 @@ docsApp.post("/link", zValidator("json", linkDocSchema), async (c) => {
       })
       .run();
 
-    Logger.info(c.env.DB, "api/docs", `Successfully linked doc as v${nextVersion}`);
+    Logger.info(c.env.DB, c.executionCtx, "api/docs", `Successfully linked doc as v${nextVersion}`);
     return c.json({ success: true, version: nextVersion });
   } catch (error: any) {
-    Logger.error(c.env.DB, "api/docs", "Failed to link document", { error: error.message });
+    Logger.error(c.env.DB, c.executionCtx, "api/docs", "Failed to link document", {
+      error: error.message,
+    });
     return c.json({ error: "Failed to link document" }, 500);
   }
 });
