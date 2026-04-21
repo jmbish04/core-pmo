@@ -1,0 +1,45 @@
+name: Deploy GAS Addon
+
+on:
+  push:
+    paths:
+      - "gas-addon/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install dependencies
+        run: |
+          cd gas-addon
+          pnpm install
+      - name: Create clasprc.json
+        run: |
+          if [ -n "${{ secrets.CLASPRC_JSON }}" ]; then
+            echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
+          else
+            echo "Skipping clasprc.json creation, secret is empty"
+          fi
+      - name: Create .clasp.json
+        run: |
+          cd gas-addon
+          if [ -n "${{ secrets.GAS_SCRIPT_ID }}" ]; then
+            echo "{\"scriptId\":\"${{ secrets.GAS_SCRIPT_ID }}\",\"rootDir\":\".\"}" > .clasp.json
+          else
+            echo "Skipping .clasp.json creation, secret is empty"
+          fi
+      - name: Push to GAS
+        run: |
+          cd gas-addon
+          if [ -f ~/.clasprc.json ] && [ -f .clasp.json ]; then
+            pnpm run push
+          else
+            echo "Missing clasp configuration. Skipping push."
+          fi

@@ -1,55 +1,58 @@
 /**
- * @fileoverview Main Hono API router
- *
- * This file sets up the main Hono application with all API routes and middleware.
+ * @fileoverview Main Hono API application entrypoint.
+ * Mounts modular sub-routers and handles top-level configuration.
  */
 
-import { Hono } from 'hono';
-import { cors } from 'hono/cors';
-import { logger } from 'hono/logger';
-import type { D1Database, Ai } from '@cloudflare/workers-types';
-import { authRouter } from './routes/auth';
-import { dashboardRouter } from './routes/dashboard';
-import { threadsRouter } from './routes/threads';
-import { healthRouter } from './routes/health';
-import { notificationsRouter } from './routes/notifications';
-import { aiRouter } from './routes/ai';
-import { documentsRouter } from './routes/documents';
-import { openapiRouter } from './routes/openapi';
+import { zValidator } from "@hono/zod-validator";
+import { Hono } from "hono";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
+
+import { Logger } from "../lib/logger";
+import docsApp from "./routes/documents";
+import projectsApp from "./routes/projects";
 
 export type Bindings = {
   DB: D1Database;
-  AI: Ai;
-  AI_GATEWAY_TOKEN?: string;
-  CLOUDFLARE_ACCOUNT_ID?: string;
+  DocAnalysisAgent: any; // Assuming AgentNamespace isn't globally available here
+  CloudflareAgent: any;
+  JulesOversightAgent: any;
 };
 
-export type Variables = {
-  userId?: number;
-  user?: {
-    id: number;
-    email: string;
-    name: string;
-  };
-};
+const app = new Hono<{ Bindings: Bindings }>();
 
-const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+// Mount modular sub-routers
+app.route("/api/projects", projectsApp);
+app.route("/api/docs", docsApp);
 
-// Middleware
-app.use('*', cors());
-app.use('*', logger());
+/**
+ * POST /api/analyze
+ * Legacy/Standalone route for triggering document analysis.
+ */
+const analyzeSchema = z.object({
+  document_content: z.string(),
+});
 
-// Health check
-app.get('/api/ping', (c) => c.json({ status: 'ok', timestamp: Date.now() }));
+app.post("/api/analyze", zValidator("json", analyzeSchema), async (c) => {
+  Logger.info(c.env.DB, "api/analyze", "Triggered analysis agent");
+  // const { document_content } = c.req.valid('json');
+  const workflowId = uuidv4();
+  // Simulate AI Gateway / Workflow call here
+  return c.json({ status: "analyzing", workflow_id: workflowId });
+});
 
-// Mount routers
-app.route('/api/auth', authRouter);
-app.route('/api/dashboard', dashboardRouter);
-app.route('/api/threads', threadsRouter);
-app.route('/api/health', healthRouter);
-app.route('/api/notifications', notificationsRouter);
-app.route('/api/ai', aiRouter);
-app.route('/api/documents', documentsRouter);
-app.route('/', openapiRouter);
+/**
+ * POST /api/repo/create
+ * Legacy/Standalone route for triggering GitHub repo cloning.
+ */
+const createRepoSchema = z.object({
+  project_id: z.string(),
+  github_token: z.string(),
+});
 
-export { app };
+app.post("/api/repo/create", zValidator("json", createRepoSchema), async (c) => {
+  Logger.info(c.env.DB, "api/repo", "Initiating repo creation");
+  return c.json({ status: "queued", message: "Repo creation initiated" });
+});
+
+export default app;
