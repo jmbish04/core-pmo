@@ -2,40 +2,49 @@ name: Deploy GAS Addon
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'gas-addon/**'
+      - 'scripts/**'
+      - '.github/workflows/gas-deploy.yml'
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install Clasp
+
+      - name: Install Clasp Globally
         run: npm install -g @google/clasp
-      - name: Create clasprc.json
-        run: |
-          if [ -n "${{ secrets.CLASP_CREDS }}" ]; then
-            echo '${{ secrets.CLASP_CREDS }}' > ~/.clasprc.json
-          else
-            echo "Skipping clasprc.json creation, secret is empty"
-          fi
-      - name: Create .clasp.json
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Provide Authentication (Python Setup)
+        run: python3 scripts/setup-clasp.py
+        env:
+          CLASPRC_JSON_RAW: ${{ secrets.CLASPRC_JSON }}
+
+      - name: Configure Clasp for Addon
         run: |
           cd gas-addon
           if [ -n "${{ secrets.GAS_SCRIPT_ID }}" ]; then
             echo "{\"scriptId\":\"${{ secrets.GAS_SCRIPT_ID }}\",\"rootDir\":\".\"}" > .clasp.json
           else
-            echo "Skipping .clasp.json creation, secret is empty"
+            echo "Warning: GAS_SCRIPT_ID secret is missing."
           fi
-      - name: Push to GAS
-        run: |
-          cd gas-addon
-          if [ -f ~/.clasprc.json ] && [ -f .clasp.json ]; then
-            clasp push -f
-          else
-            echo "Missing clasp configuration. Skipping push."
-          fi
+
+      # Uncomment if you port over validation from gas-recipe-to-doc
+      # - name: Validate Configuration
+      #   run: npm run gas:validate
+
+      - name: Execute Production Deployment
+        run: npm run gas:deploy
