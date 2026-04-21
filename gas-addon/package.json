@@ -3,11 +3,7 @@
   "version": "1.0.0",
   "description": "Google Apps Script project managed with clasp",
   "scripts": {
-    "gas:setup": "python3 scripts/setup-clasp.py",
-    "gas:validate": "node scripts/validate-config.js",
-    "gas:build": "node scripts/build.js",
-    "gas:push": "cd gas-addon && clasp push -f",
-    "gas:deploy": "npm run gas:build && npm run gas:push && node scripts/deploy-prod.js"
+    "push": "clasp push -f"
   },
   "devDependencies": {
     "@google/clasp": "^2.4.2"

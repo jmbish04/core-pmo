@@ -2,40 +2,32 @@ Please review the prompt iteration below and generate an optimized jules prompt 
 
 the detailed plan must include all api endpoints needed, hookups to the frontend pages, etc etc 
 
-
 Initial prompt where I was thinking appscript with a new idea to have a worker compliment appscript but have frontend app hosted by appscript :
 
-```markdown
+````markdown
 ok, thank you ... im starting to think now that we should utilize appsscript to host the frontend webbapp but then to also offer a post api ... and to host all the heavy lifting operations on a cloudflare worker that will compliment the appscript, hosting an api that the appscript can get/post to -- allowing appscript to leverage this worker api for ai, agents, d1, cron, etc -- while the worker can utilize the appscript post api to leverage the oauth that appscript offers so eloquently and then also so that the user can make modifications to code that are small tweaks like how to standardize the google doc handling etc 
 
 the appscript fontend for listing existing projects etc can be entirely offloaded to the worker and appscript to consume and post to the worker api to list projects, create projects, provide ai chat on the appscript webapp frontend powered by worker api like /chat instead of a complicated ai gateway url fetch implementation in appscript, etc 
 
-
 Pleaes review the prompt i had been working on for all of this jules and stitch and project orchestration management in appscript entirely but using cloudflare api endppoints (not worker api, cloudflare api endpoints) ... and ensure that there is a full optimization of appscript offerings and worker offerings to while also implementing architecture that will minimize limitations in appscript while also limiting tech debt and tech complexity 
-
 
 here's the prompt i was working on 
 
-
 I have attached multiple markdown files which each represent a Tab within a GoogleDoc. Each Tab/Markdown file represents an artifact that Gemini has generated in response to a software planning and design task, where gemini has reviewed core code base, consulted cloudflare docs best practices, and generated an implementation plan complete with overview, prd, project_tasks.json, filetree, and sample code. 
 
-
 This represents a common repeatable pattern where I will ask for this level of orchestration for implementing features, improvements, maintenance, fixes, etc. 
-
 
 The problem is that this orchestration via gemini chat generates multiple outputs which I need to store as revisions etc and that means a lot of clicking and copy/paste etc. 
 
 Please generate a prompt for my coding agent to build a project management tool that will compliment this gemini chat orchestration flow in appscript. 
 
-
 Here is what needs to be supported
-
 
 Build a Cloudflare Class which provides capabilities such as:
 D1 Database -- CRUD operations
 
-
 Cloudflare API - D1 Sqlite database operations
+
 ## Query D1 Database
 
 **post** `/accounts/{account_id}/d1/database/{database_id}/query`
@@ -190,69 +182,65 @@ curl https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/d1/database/$DATA
           ]
         }'
 ```
+````
 
 #### Response
 
 ```json
 {
-  "errors": [
-    {
-      "code": 1000,
-      "message": "message",
-      "documentation_url": "documentation_url",
-      "source": {
-        "pointer": "pointer"
-      }
-    }
-  ],
-  "messages": [
-    {
-      "code": 1000,
-      "message": "message",
-      "documentation_url": "documentation_url",
-      "source": {
-        "pointer": "pointer"
-      }
-    }
-  ],
-  "result": [
-    {
-      "meta": {
-        "changed_db": true,
-        "changes": 0,
-        "duration": 0,
-        "last_row_id": 0,
-        "rows_read": 0,
-        "rows_written": 0,
-        "served_by_colo": "LHR",
-        "served_by_primary": true,
-        "served_by_region": "EEUR",
-        "size_after": 0,
-        "timings": {
-          "sql_duration_ms": 0
-        }
-      },
-      "results": [
-        {}
-      ],
-      "success": true
-    }
-  ],
-  "success": true
+  "errors": [
+    {
+      "code": 1000,
+      "message": "message",
+      "documentation_url": "documentation_url",
+      "source": {
+        "pointer": "pointer"
+      }
+    }
+  ],
+  "messages": [
+    {
+      "code": 1000,
+      "message": "message",
+      "documentation_url": "documentation_url",
+      "source": {
+        "pointer": "pointer"
+      }
+    }
+  ],
+  "result": [
+    {
+      "meta": {
+        "changed_db": true,
+        "changes": 0,
+        "duration": 0,
+        "last_row_id": 0,
+        "rows_read": 0,
+        "rows_written": 0,
+        "served_by_colo": "LHR",
+        "served_by_primary": true,
+        "served_by_region": "EEUR",
+        "size_after": 0,
+        "timings": {
+          "sql_duration_ms": 0
+        }
+      },
+      "results": [{}],
+      "success": true
+    }
+  ],
+  "success": true
 }
 ```
 
-
-
-
 AI Gateway to run any provider/model prompt to generate a response using ai-gateway compat mode
 
+## Cloudflare API - AI Gateway 
 
-Cloudflare API - AI Gateway 
----
 title: Getting started
 description: In this guide, you will learn how to set up and use your first AI Gateway.
 image: https://developers.cloudflare.com/dev-products-preview.png
+
 ---
 
 [Skip to content](#%5Ftop) 
@@ -323,10 +311,11 @@ Create a gateway manually
 
 You can also create gateways manually with a custom name and configuration through the dashboard or API.
 
-* [ Dashboard ](#tab-panel-5079)
-* [ API ](#tab-panel-5080)
+- [ Dashboard ](#tab-panel-5079)
+- [ API ](#tab-panel-5080)
 
 [ Go to **AI Gateway** ](https://dash.cloudflare.com/?to=/:account/ai/ai-gateway)
+
 1. Log into the [Cloudflare dashboard ↗](https://dash.cloudflare.com/) and select your account.
 2. Go to **AI** \> **AI Gateway**.
 3. Select **Create Gateway**.
@@ -336,8 +325,8 @@ You can also create gateways manually with a custom name and configuration throu
 To set up an AI Gateway using the API:
 
 1. [Create an API token](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/) with the following permissions:  
-   * `AI Gateway - Read`  
-   * `AI Gateway - Edit`
+      * `AI Gateway - Read`  
+      * `AI Gateway - Edit`
 2. Get your [Account ID](https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/).
 3. Using that API token and Account ID, send a [POST request](https://developers.cloudflare.com/api/resources/ai%5Fgateway/methods/create/) to the Cloudflare API.
 
@@ -345,15 +334,16 @@ To set up an AI Gateway using the API:
 
 Authenticate with your upstream AI provider using one of the following options:
 
-* **Unified Billing:** Use the AI Gateway billing to pay for and authenticate your inference requests. Refer to [Unified Billing](https://developers.cloudflare.com/ai-gateway/features/unified-billing/).
-* **BYOK (Store Keys):** Store your own provider API Keys with Cloudflare, and AI Gateway will include them at runtime. Refer to [BYOK](https://developers.cloudflare.com/ai-gateway/configuration/bring-your-own-keys/).
-* **Request headers:** Include your provider API Key in the request headers as you normally would (for example, `Authorization: Bearer <OPENAI_API_KEY>`).
+- **Unified Billing:** Use the AI Gateway billing to pay for and authenticate your inference requests. Refer to [Unified Billing](https://developers.cloudflare.com/ai-gateway/features/unified-billing/).
+- **BYOK (Store Keys):** Store your own provider API Keys with Cloudflare, and AI Gateway will include them at runtime. Refer to [BYOK](https://developers.cloudflare.com/ai-gateway/configuration/bring-your-own-keys/).
+- **Request headers:** Include your provider API Key in the request headers as you normally would (for example, `Authorization: Bearer <OPENAI_API_KEY>`).
 
 ## Integration options
 
 ### Unified API Endpoint
 
 OpenAI Compatible Recommended   
+
   
 The easiest way to get started with AI Gateway is through our OpenAI-compatible `/chat/completions` endpoint. This allows you to use existing OpenAI SDKs and tools with minimal code changes while gaining access to multiple AI providers.
 
@@ -361,9 +351,9 @@ The easiest way to get started with AI Gateway is through our OpenAI-compatible 
 
 **Key benefits:**
 
-* Drop-in replacement for OpenAI API, works with existing OpenAI SDKs and other OpenAI compliant clients
-* Switch between providers by changing the `model` parameter
-* Dynamic Routing - Define complex routing scenarios requiring conditional logic, conduct A/B tests, set rate / budget limits, etc
+- Drop-in replacement for OpenAI API, works with existing OpenAI SDKs and other OpenAI compliant clients
+- Switch between providers by changing the `model` parameter
+- Dynamic Routing - Define complex routing scenarios requiring conditional logic, conduct A/B tests, set rate / budget limits, etc
 
 #### Example:
 
@@ -2038,30 +2028,36 @@ https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/{provider}
 
 **Available providers:**
 
-* [OpenAI](https://developers.cloudflare.com/ai-gateway/usage/providers/openai/) \- GPT models and embeddings
-* [Anthropic](https://developers.cloudflare.com/ai-gateway/usage/providers/anthropic/) \- Claude models
-* [Google AI Studio](https://developers.cloudflare.com/ai-gateway/usage/providers/google-ai-studio/) \- Gemini models
-* [Workers AI](https://developers.cloudflare.com/ai-gateway/usage/providers/workersai/) \- Cloudflare's inference platform
-* [AWS Bedrock](https://developers.cloudflare.com/ai-gateway/usage/providers/bedrock/) \- Amazon's managed AI service
-* [Azure OpenAI](https://developers.cloudflare.com/ai-gateway/usage/providers/azureopenai/) \- Microsoft's OpenAI service
-* [and more...](https://developers.cloudflare.com/ai-gateway/usage/providers/)
+- [OpenAI](https://developers.cloudflare.com/ai-gateway/usage/providers/openai/) \- GPT models and embeddings
+- [Anthropic](https://developers.cloudflare.com/ai-gateway/usage/providers/anthropic/) \- Claude models
+- [Google AI Studio](https://developers.cloudflare.com/ai-gateway/usage/providers/google-ai-studio/) \- Gemini models
+- [Workers AI](https://developers.cloudflare.com/ai-gateway/usage/providers/workersai/) \- Cloudflare's inference platform
+- [AWS Bedrock](https://developers.cloudflare.com/ai-gateway/usage/providers/bedrock/) \- Amazon's managed AI service
+- [Azure OpenAI](https://developers.cloudflare.com/ai-gateway/usage/providers/azureopenai/) \- Microsoft's OpenAI service
+- [and more...](https://developers.cloudflare.com/ai-gateway/usage/providers/)
 
 ## Next steps
 
-* Learn more about [caching](https://developers.cloudflare.com/ai-gateway/features/caching/) for faster requests and cost savings and [rate limiting](https://developers.cloudflare.com/ai-gateway/features/rate-limiting/) to control how your application scales.
-* Explore how to specify model or provider [fallbacks, ratelimits, A/B tests](https://developers.cloudflare.com/ai-gateway/features/dynamic-routing/) for resiliency.
-* Learn how to use low-cost, open source models on [Workers AI](https://developers.cloudflare.com/ai-gateway/usage/providers/workersai/) \- our AI inference service.
+- Learn more about [caching](https://developers.cloudflare.com/ai-gateway/features/caching/) for faster requests and cost savings and [rate limiting](https://developers.cloudflare.com/ai-gateway/features/rate-limiting/) to control how your application scales.
+- Explore how to specify model or provider [fallbacks, ratelimits, A/B tests](https://developers.cloudflare.com/ai-gateway/features/dynamic-routing/) for resiliency.
+- Learn how to use low-cost, open source models on [Workers AI](https://developers.cloudflare.com/ai-gateway/usage/providers/workersai/) \- our AI inference service.
 
 ```json
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"/directory/","name":"Directory"}},{"@type":"ListItem","position":2,"item":{"@id":"/ai-gateway/","name":"AI Gateway"}},{"@type":"ListItem","position":3,"item":{"@id":"/ai-gateway/get-started/","name":"Getting started"}}]}
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "item": { "@id": "/directory/", "name": "Directory" } },
+    { "@type": "ListItem", "position": 2, "item": { "@id": "/ai-gateway/", "name": "AI Gateway" } },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "item": { "@id": "/ai-gateway/get-started/", "name": "Getting started" }
+    }
+  ]
+}
 ```
 
-
-
-
-
-
-		
 Build a Jules class
 Perhaps we could use jules sdk on a cloudflare worker that is the engine to this appscript and the worker provides an api endpoint for the appscript to create a jules session and also passes along the orchestration session artifacts like the google doc url, google sheet url, etc
 Then the worker can handle the jules session oversight and orchestration, using d1 to store the initial prompt to jules, status, log of checkins, a cloudflare agents sdk framework jules agent that will subscribe to the jules session and be available to respond to questions from jules and/or get jules back on track when stuck, etc
@@ -2081,7 +2077,8 @@ Group sessions by project name
 Ability to filter by project name, run searches, etc
 Each orchestration session
 Button to create a new orchestration session 
-```
+
+````
 
 ai response to this appscript frontend w/ worker compliment:
 
@@ -2131,20 +2128,20 @@ Markdown
 Markdown
 
 # Hybrid Architecture Rules- **Strict End-to-End Code:** Never skip code. No `// ... rest of code` placeholders. Every file must be complete and ready for one-click copy-pasting.- **D1 over Sheets for State:** Use D1 and Drizzle ORM as the absolute source of truth for application state. Google Workspace is strictly for document and artifact storage.- **Worker API Supremacy:** Apps Script must act primarily as an integration broker for Google APIs. All heavy compute, routing, polling, and AI requests must occur within the Cloudflare Worker.- **Frontend Serving:** If serving the UI via Apps Script, the Astro build must be exported to a single inline HTML file. Alternatively, host the UI on Cloudflare Worker Static Assets and let Apps Script strictly serve as a headless API for Google OAuth operations.- **Hono & OpenAPI:** Enforce `@hono/zod-openapi` for all Worker endpoints to ensure contract strictness between the Worker and GAS.
-```
+````
 
 after reviwing this ai response plan, I realized we should go an entirely different route and have the entire frontend hosted on the worker with appscript complimenting and having an addon interface for ui sidebar inside the google doc 
 
 ```markdown
 Actually, lets modify this prompt significantly
 
-1) The cloudflare worker should host the frontend -- its a huge improvement over appsscript web app limitiations -- I have attached `core-pmo` that is created new from template which is a template cloudflare worker with a shadcn astro frontend and the template is enforcing the skeleton and best practices that i prefer -- so i would like your prompt to instruct the coding agent to operate within this framework (with detailed technical instructions on how to do so) 
+1. The cloudflare worker should host the frontend -- its a huge improvement over appsscript web app limitiations -- I have attached `core-pmo` that is created new from template which is a template cloudflare worker with a shadcn astro frontend and the template is enforcing the skeleton and best practices that i prefer -- so i would like your prompt to instruct the coding agent to operate within this framework (with detailed technical instructions on how to do so) 
 
-2) I have made prior attempts to create a project management suite for vibe coding many times before .. please refer to the attached code `pmo` (not core-pmo, `pmo`) and please incorporate the features from this repo ... note that I'm not sure about clickup integration .. I like that it offers the project mangement tracking interface that I like ... and I like that this means I wouldnt need to build it into my cloudflare worker ... but im not sure if clickup or linear or other service would be better -- but essentially, this would be where the project_tasks.json would be created ... with the worker processing a project_tasks.json payload and inserts into a clickup or linear like service using its api layer 
+2. I have made prior attempts to create a project management suite for vibe coding many times before .. please refer to the attached code `pmo` (not core-pmo, `pmo`) and please incorporate the features from this repo ... note that I'm not sure about clickup integration .. I like that it offers the project mangement tracking interface that I like ... and I like that this means I wouldnt need to build it into my cloudflare worker ... but im not sure if clickup or linear or other service would be better -- but essentially, this would be where the project_tasks.json would be created ... with the worker processing a project_tasks.json payload and inserts into a clickup or linear like service using its api layer 
 
-3) We should therefore adjust the prompt to utilize appscript merely for its oauth services ... the repo should have a folder for the appscript and a github action to deploy that appscript using github actions -- lets make the appscript an addon deployment 
+3. We should therefore adjust the prompt to utilize appscript merely for its oauth services ... the repo should have a folder for the appscript and a github action to deploy that appscript using github actions -- lets make the appscript an addon deployment 
 
-4) While the main user interface will be hosted on cloudflare workers, I think it would be really beneficial to have an addon user interface so that i can have an easier flexibility between the PRD and other artifacts in google docs and the cloudflare worker 
+4. While the main user interface will be hosted on cloudflare workers, I think it would be really beneficial to have an addon user interface so that i can have an easier flexibility between the PRD and other artifacts in google docs and the cloudflare worker 
 
    - Gemini Chat interface where I'll do a lot of orchestration planning offers a button to export gemini chat reponses to google doc and I do this all the time so that markdown formatting is properly formatted (copy/paste is fugly) .... the workflow could be exporting a google doc from gemini chat > Opening the Add On menu > Colby PMO > Sidebar appears ... 
 
@@ -2156,10 +2153,6 @@ Actually, lets modify this prompt significantly
      --- A button to choose from an existing orchestration project; the addon will ask the user to choose the project from a list generated via worker api get projects (ordered by date asc) 
        --- selecting a project will make an  post to the worker api with the project id and google doc id .. the worker will then automatically set the version number based on whether there are other google docs already existing in the d1 instance for the project id
 
-
-
-
-
   -- the sidebar ui will also provide other features like 
     -- asking for an analysis of the doc from a particular agent or all agents -- where by the selected agent(s) will be review the document content sent in api payload for GuardRails / Best Practices, CloudflareAgent, GithubAgent, etc with the thinking and anlaysis finding being saved in d1 and available on the cloudflare worker frontend .... and the overall response overview being saved as a new tab in the google doc that was provided. -- although if the appscript api could support the ability to make `suggestions` in the document with updated language recommended by the agent(s) review, that would be optimial so I could review the suggestions and approve/reject -- leveraging the google doc collaboration features 
 
@@ -2167,18 +2160,15 @@ Actually, lets modify this prompt significantly
 
   -- chat generally with ai via the addon sidebar about the prd etc 
 
-
-
-5) I'm also wondering whether we utilize jules sdk on the worker to actually be the backend orchestration model at least in part since jules is running gemini 3.1 pro on the backend, it has a large context window ... we could do this as jules sdk repoless session or a jules session against an existing github repo (like if i already had a running app but I was orchestrating a new project to implement improvements on that app/its' github repo) 
-   -- The worker frontend should allow for pasting artifacts from gemini chat interface and then having the worker handle those artifacts appropriately by creating a google doc etc as alrady outlined before 
-   -- But also having the worker frontend provide a secondary option which acts like the gemini chat interface -- so the user doesnt need to paste artifacts from gemini chat interface:
-     --- The worker interface will provide assistant-ui interface for this chat experience within an orchestration project viewport 
-     --- the chat experience will utilize a cloudflare agent (cloudlfare agents sdk), with the CloudflareAgent being a cloudflare expert with cloudflare sdk tools and the cloudflare docs mcp tool to verify technical implementation details -- the cloudflare sdk tools would allow the agent to create bindings etc that can be setup on the new github repo wrangler.jsonc
-   -- but the CloudflareAgent would be utilized for reviewing the assistant-ui chat thread to then consult cloudflare docs mcp for technical implementation details and would then develop a prompt for jules to provide the planning artifacts (PRD.md, tasks.json, scaffold code, etc etc)
+5. I'm also wondering whether we utilize jules sdk on the worker to actually be the backend orchestration model at least in part since jules is running gemini 3.1 pro on the backend, it has a large context window ... we could do this as jules sdk repoless session or a jules session against an existing github repo (like if i already had a running app but I was orchestrating a new project to implement improvements on that app/its' github repo) 
+      -- The worker frontend should allow for pasting artifacts from gemini chat interface and then having the worker handle those artifacts appropriately by creating a google doc etc as alrady outlined before 
+      -- But also having the worker frontend provide a secondary option which acts like the gemini chat interface -- so the user doesnt need to paste artifacts from gemini chat interface:
+        --- The worker interface will provide assistant-ui interface for this chat experience within an orchestration project viewport 
+        --- the chat experience will utilize a cloudflare agent (cloudlfare agents sdk), with the CloudflareAgent being a cloudflare expert with cloudflare sdk tools and the cloudflare docs mcp tool to verify technical implementation details -- the cloudflare sdk tools would allow the agent to create bindings etc that can be setup on the new github repo wrangler.jsonc
+      -- but the CloudflareAgent would be utilized for reviewing the assistant-ui chat thread to then consult cloudflare docs mcp for technical implementation details and would then develop a prompt for jules to provide the planning artifacts (PRD.md, tasks.json, scaffold code, etc etc)
 ```
 
 ai response to this shifted and improved architecture balance, worker > appscript:
-
 
 ```markdown
 Vibe Coding Orchestrator (Colby PMO) - Master Implementation Prompt
@@ -2187,64 +2177,66 @@ Role: You are an elite Senior Systems Architect and Cloudflare Ecosystem Expert.
 Context & Baseline:
 You are operating within the core-pmo template structure. The Cloudflare Worker is the absolute source of truth and heavy-compute engine. Google Apps Script is strictly a thin client / OAuth broker providing a Sidebar UI inside Google Docs to seamlessly bridge planning artifacts with the Cloudflare backend.
 Part 1: Database & Core API (Cloudflare Worker)
+
 1. D1 Database Schema (Drizzle ORM)
-Extend the core-pmo schema to handle the legacy pmo logic and new orchestration requirements:
-projects: id, name, github_repo_url, clickup_folder_id, created_at.
-documents: Mapping table for Google Docs. id, project_id (FK), google_doc_id (unique), doc_type (e.g., 'PRD', 'UX_RESEARCH'), version_number, created_at.
-tasks: Syncs from project_tasks.json. id, project_id (FK), external_task_id (ClickUp/Linear ID), title, description, status, agent_assignee.
-jules_sessions: id, project_id, jules_api_session_id, prompt, status, created_at.
+   Extend the core-pmo schema to handle the legacy pmo logic and new orchestration requirements:
+   projects: id, name, github_repo_url, clickup_folder_id, created_at.
+   documents: Mapping table for Google Docs. id, project_id (FK), google_doc_id (unique), doc_type (e.g., 'PRD', 'UX_RESEARCH'), version_number, created_at.
+   tasks: Syncs from project_tasks.json. id, project_id (FK), external_task_id (ClickUp/Linear ID), title, description, status, agent_assignee.
+   jules_sessions: id, project_id, jules_api_session_id, prompt, status, created_at.
 2. Hono API Routes (@hono/zod-openapi)
-Implement secure REST endpoints in src/backend/api/ for the GAS Add-on to consume:
-GET /api/docs/:google_doc_id/project: Looks up the doc. Returns the associated project, or 404.
-GET /api/projects: Lists existing orchestration projects.
-POST /api/projects: Creates a new project, maps the provided google_doc_id as v1, and returns the Worker frontend URL for the project.
-POST /api/docs/link: Associates an existing project with a google_doc_id, auto-incrementing the version number based on existing mapped docs for that project.
-POST /api/repo/create: Accepts a repo name. Uses the Github API to clone jmbish04/core-template-cfw-assets-astro-shadcn, update wrangler.jsonc with the new name, and returns the repo URL.
-POST /api/analyze: Accepts doc content. Triggers the internal DocAnalysisAgent workflow.
-Part 2: Google Apps Script Add-on (Sidebar UI)
-1. Setup & Deployment
-Create a /gas-addon/ directory in the repository.
-Configure clasp (.clasp.json) and a GitHub Action workflow to deploy this add-on automatically on push to the main branch.
-The Add-on must use HtmlService to render a React/Tailwind sidebar (bundled via Vite) or clean vanilla JS matching Shadcn aesthetics.
-2. Sidebar Features & Workflow
-Initialization: onOpen creates the "Colby PMO" menu. Clicking it opens the Sidebar.
-Doc Detection: On load, fetches GET /api/docs/:google_doc_id/project.
-If Not Found: Displays a welcome banner. Shows "Create New Project" (prompts for name, calls POST /api/projects) and "Link to Existing Project" (calls GET /api/projects, user selects, calls POST /api/docs/link).
-If Found: Displays project details, task queues, and active Jules sessions.
-AI Analysis Integration: Button to "Analyze PRD". Calls POST /api/analyze. The Worker evaluates the PRD against Cloudflare/Github constraints. The GAS script uses DocumentApp to append the returned analysis as a new Section/Tab in the Doc, and utilizes the Google Docs API to insert specific suggestions (suggested edits) for the user to approve/reject.
-Repository Scaffolding: Button to "Provision Github Repo". Prompts for name, triggers the Worker API to clone the template.
-Sidebar Chat: A lightweight chat interface communicating with the Worker's CloudflareAgent for quick PRD Q&A.
-Part 3: AI Agents & Jules Orchestration (Workers Backend)
-Utilize the @cloudflare/agents SDK and Cloudflare AI Gateway.
-CloudflareAgent (AIChatAgent):
-Serves the frontend assistant-ui chat interface.
-MCP Integration: Connects to the cloudflare-docs MCP server.
-Capabilities: Acts as a Cloudflare expert. Can execute tools to provision Cloudflare bindings (D1, KV) via the Cloudflare API, update the associated repo's wrangler.jsonc, and draft the final project_tasks.json.
-Task Sync Logic:
-Port the clickup.ts logic from the legacy pmo repo. When project_tasks.json is finalized by the CloudflareAgent, the Worker parses it, inserts rows into the D1 tasks table, and syncs them to ClickUp (or Linear) via their respective APIs.
-JulesOversightAgent (Agent or AIChatAgent):
-Manages the backend Jules execution session.
-Takes the finalized PRD and tasks, opens a session with the Jules API (routing through AI Gateway for observability).
-Stores the jules_session_id in D1.
-Subscribes to the Jules API events and relays them via WebSocket to the frontend assistant-ui interface, allowing the user to provide Human-in-the-Loop (HITL) feedback or corrections directly to Jules via the Cloudflare Agent proxy.
-Part 4: Frontend (Astro + React + assistant-ui + Shadcn)
-Built within src/frontend/ and served via Cloudflare Worker Static Assets.
-Project Dashboard (/projects/[id]):
-Displays ClickUp/Linear task sync status.
-Displays active Jules orchestration sessions.
-Chat Interface (/projects/[id]/orchestrate):
-Implement the @assistant-ui/react Thread component.
-Connect it to the CloudflareAgent using @cloudflare/ai-chat's useAgentChat hook.
-Include buttons to easily paste Gemini artifacts or trigger the CloudflareAgent to pull directly from the linked Google Doc via the mapping table.
-Strict Execution Requirements:
-Full Code Output: You must provide all files in their entirety. No // ... rest of code placeholders.
-Astro + Cloudflare Assets: Respect the core-pmo routing where Astro builds to dist/ and the Worker _worker.ts or src/backend/api/index.ts intercepts /api/* and WebSocket upgrades, falling back to ASSETS for static files.
-Drizzle ORM: Use strict SQLite dialects for D1.
-End with the Antigravity Plan.
-Antigravity Implementation Plan
-Markdown
+   Implement secure REST endpoints in src/backend/api/ for the GAS Add-on to consume:
+   GET /api/docs/:google_doc_id/project: Looks up the doc. Returns the associated project, or 404.
+   GET /api/projects: Lists existing orchestration projects.
+   POST /api/projects: Creates a new project, maps the provided google_doc_id as v1, and returns the Worker frontend URL for the project.
+   POST /api/docs/link: Associates an existing project with a google_doc_id, auto-incrementing the version number based on existing mapped docs for that project.
+   POST /api/repo/create: Accepts a repo name. Uses the Github API to clone jmbish04/core-template-cfw-assets-astro-shadcn, update wrangler.jsonc with the new name, and returns the repo URL.
+   POST /api/analyze: Accepts doc content. Triggers the internal DocAnalysisAgent workflow.
+   Part 2: Google Apps Script Add-on (Sidebar UI)
+3. Setup & Deployment
+   Create a /gas-addon/ directory in the repository.
+   Configure clasp (.clasp.json) and a GitHub Action workflow to deploy this add-on automatically on push to the main branch.
+   The Add-on must use HtmlService to render a React/Tailwind sidebar (bundled via Vite) or clean vanilla JS matching Shadcn aesthetics.
+4. Sidebar Features & Workflow
+   Initialization: onOpen creates the "Colby PMO" menu. Clicking it opens the Sidebar.
+   Doc Detection: On load, fetches GET /api/docs/:google_doc_id/project.
+   If Not Found: Displays a welcome banner. Shows "Create New Project" (prompts for name, calls POST /api/projects) and "Link to Existing Project" (calls GET /api/projects, user selects, calls POST /api/docs/link).
+   If Found: Displays project details, task queues, and active Jules sessions.
+   AI Analysis Integration: Button to "Analyze PRD". Calls POST /api/analyze. The Worker evaluates the PRD against Cloudflare/Github constraints. The GAS script uses DocumentApp to append the returned analysis as a new Section/Tab in the Doc, and utilizes the Google Docs API to insert specific suggestions (suggested edits) for the user to approve/reject.
+   Repository Scaffolding: Button to "Provision Github Repo". Prompts for name, triggers the Worker API to clone the template.
+   Sidebar Chat: A lightweight chat interface communicating with the Worker's CloudflareAgent for quick PRD Q&A.
+   Part 3: AI Agents & Jules Orchestration (Workers Backend)
+   Utilize the @cloudflare/agents SDK and Cloudflare AI Gateway.
+   CloudflareAgent (AIChatAgent):
+   Serves the frontend assistant-ui chat interface.
+   MCP Integration: Connects to the cloudflare-docs MCP server.
+   Capabilities: Acts as a Cloudflare expert. Can execute tools to provision Cloudflare bindings (D1, KV) via the Cloudflare API, update the associated repo's wrangler.jsonc, and draft the final project_tasks.json.
+   Task Sync Logic:
+   Port the clickup.ts logic from the legacy pmo repo. When project_tasks.json is finalized by the CloudflareAgent, the Worker parses it, inserts rows into the D1 tasks table, and syncs them to ClickUp (or Linear) via their respective APIs.
+   JulesOversightAgent (Agent or AIChatAgent):
+   Manages the backend Jules execution session.
+   Takes the finalized PRD and tasks, opens a session with the Jules API (routing through AI Gateway for observability).
+   Stores the jules_session_id in D1.
+   Subscribes to the Jules API events and relays them via WebSocket to the frontend assistant-ui interface, allowing the user to provide Human-in-the-Loop (HITL) feedback or corrections directly to Jules via the Cloudflare Agent proxy.
+   Part 4: Frontend (Astro + React + assistant-ui + Shadcn)
+   Built within src/frontend/ and served via Cloudflare Worker Static Assets.
+   Project Dashboard (/projects/[id]):
+   Displays ClickUp/Linear task sync status.
+   Displays active Jules orchestration sessions.
+   Chat Interface (/projects/[id]/orchestrate):
+   Implement the @assistant-ui/react Thread component.
+   Connect it to the CloudflareAgent using @cloudflare/ai-chat's useAgentChat hook.
+   Include buttons to easily paste Gemini artifacts or trigger the CloudflareAgent to pull directly from the linked Google Doc via the mapping table.
+   Strict Execution Requirements:
+   Full Code Output: You must provide all files in their entirety. No // ... rest of code placeholders.
+   Astro + Cloudflare Assets: Respect the core-pmo routing where Astro builds to dist/ and the Worker \_worker.ts or src/backend/api/index.ts intercepts /api/\* and WebSocket upgrades, falling back to ASSETS for static files.
+   Drizzle ORM: Use strict SQLite dialects for D1.
+   End with the Antigravity Plan.
+   Antigravity Implementation Plan
+   Markdown
 
 # .agent/workflows/implement-feature.md## Phase 1: D1 & Drizzle Schema Expansion1. Update `src/backend/db/schema.ts` with `projects`, `documents`, `tasks`, and `jules_sessions` tables.2. Generate migrations (`drizzle-kit generate`) and provide the raw `.sql` outputs.3. Create TypeScript interfaces for the ClickUp/Linear API payloads.## Phase 2: Hono API & Task Sync Core1. Implement `src/backend/api/routes/projects.ts` and `src/backend/api/routes/documents.ts` with strict `@hono/zod-openapi` validation.2. Port the legacy `pmo` clickup sync logic into `src/backend/services/task-sync.ts`.3. Implement `src/backend/api/routes/github.ts` to handle the template repo cloning and `wrangler.jsonc` patching.## Phase 3: Cloudflare Agents & Jules Orchestration1. Create `src/backend/agents/CloudflareAgent.ts` extending `AIChatAgent`. Implement `onChatMessage`, register the `cloudflare-docs` MCP client, and define tools for `wrangler.jsonc` modification.2. Create `src/backend/agents/DocAnalysisAgent.ts` extending `AgentWorkflow` or `Agent` to process large PRD payloads and return structured JSON suggestions.3. Create `src/backend/agents/JulesOversightAgent.ts` extending `AIChatAgent`. Implement API wrappers for `https://jules.googleapis.com/v1alpha/sessions` and wire the WebSocket streams for the frontend.## Phase 4: Astro Frontend & assistant-ui1. Create Astro pages for the dashboard (`src/frontend/pages/projects/[id].astro`).2. Build the React `assistant-ui` components (`src/frontend/components/chat/Thread.tsx`) wired to the `CloudflareAgent` WebSocket.3. Ensure Shadcn UI dark theme defaults are strictly enforced in `globals.css`.## Phase 5: Google Apps Script Add-on1. Create `gas-addon/Code.gs` containing `onOpen`, sidebar initialization, and `UrlFetchApp` wrappers for the Worker API.2. Create `gas-addon/Sidebar.html` (containing inline React/Tailwind or standard JS UI) to display the project linking logic, repo creation buttons, and analysis triggers.3. Create `.github/workflows/deploy-gas.yml` utilizing `clasp push` for automated deployment.
+
 Markdown
 
 # .agent/rules/pmo-architecture.md- **State Management:** D1 is the absolute source of truth. Google Docs is the canvas, ClickUp/Linear is the mirror.- **Worker Supremacy:** Apps Script must contain ZERO heavy logic or LLM calls. It strictly passes the `google_doc_id` and text payloads to the Worker's Hono API and receives structured commands on what Google Docs API methods to execute (e.g., insert suggestion, append tab).- **Agent Chat:** Always use `@cloudflare/ai-chat` for the frontend hooks and `@assistant-ui/react` for the UI components. Never use Vercel AI SDK due to Cloudflare compatibility issues.- **Jules Integration:** All Jules API requests must pass through Cloudflare AI Gateway (`https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/jules/...`) for observability and logging.

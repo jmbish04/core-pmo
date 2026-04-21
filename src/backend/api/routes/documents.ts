@@ -1,160 +1,84 @@
 /**
- * @fileoverview Documents API routes for PlateJS integration
+ * @fileoverview API routes for managing PMO Documents.
+ * Handles document lookup and linking to projects.
  */
 
-import { Hono } from 'hono';
-import { zValidator } from '@hono/zod-validator';
-import { z } from 'zod';
-import { drizzle } from 'drizzle-orm/d1';
-import { desc, eq } from 'drizzle-orm';
-import { documents } from '../../db/schema';
-import { authMiddleware } from '../middleware/auth';
-import type { Bindings, Variables } from '../index';
+import { zValidator } from "@hono/zod-validator";
+import { eq } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/d1";
+import { Hono } from "hono";
+import { z } from "zod";
 
-const documentsRouter = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+import { documents } from "../../db/schemas/documents/documents";
+import { projects } from "../../db/schemas/projects/projects";
+import { Logger } from "../../lib/logger";
+import { Bindings } from "../index";
 
-// Apply auth middleware
-documentsRouter.use('*', authMiddleware);
+const docsApp = new Hono<{ Bindings: Bindings }>();
 
-const createDocumentSchema = z.object({
-  title: z.string().min(1),
-  content: z.string(), // JSON string of Slate nodes
+/**
+ * GET /api/docs/:google_doc_id/project
+ * Looks up the project associated with a specific Google Doc ID.
+ */
+docsApp.get("/:google_doc_id/project", async (c) => {
+  const docId = c.req.param("google_doc_id");
+  Logger.info(c.env.DB, c.executionCtx, "api/docs", `Fetching project for doc: ${docId}`);
+
+  const db = drizzle(c.env.DB);
+  const doc = await db.select().from(documents).where(eq(documents.google_doc_id, docId)).get();
+
+  if (!doc) {
+    Logger.warn(c.env.DB, c.executionCtx, "api/docs", `Document not found: ${docId}`);
+    return c.json({ error: "Document not found" }, 404);
+  }
+
+  const project = await db.select().from(projects).where(eq(projects.id, doc.project_id)).get();
+  return c.json({ project, document: doc });
 });
 
-// GET /api/documents
-documentsRouter.get('/', async (c) => {
+const linkDocSchema = z.object({
+  project_id: z.string(),
+  google_doc_id: z.string(),
+  doc_type: z.string().default("PRD"),
+});
+
+/**
+ * POST /api/docs/link
+ * Links an existing Google Doc to a project, auto-incrementing the version.
+ */
+docsApp.post("/link", zValidator("json", linkDocSchema), async (c) => {
+  Logger.info(c.env.DB, c.executionCtx, "api/docs", "Linking document to project");
   const db = drizzle(c.env.DB);
-  const userId = c.get('userId')!;
+  const { project_id, google_doc_id, doc_type } = c.req.valid("json");
 
   try {
-    const userDocuments = await db
+    const existingDocs = await db
       .select()
       .from(documents)
-      .where(eq(documents.userId, userId))
-      .orderBy(desc(documents.updatedAt));
+      .where(eq(documents.project_id, project_id))
+      .all();
+    const nextVersion =
+      existingDocs.length > 0 ? Math.max(...existingDocs.map((d) => d.version_number)) + 1 : 1;
 
-    return c.json({ documents: userDocuments });
-  } catch (error) {
-    console.error('Error fetching documents:', error);
-    return c.json({ error: 'Failed to fetch documents' }, 500);
-  }
-});
-
-// POST /api/documents
-documentsRouter.post('/', zValidator('json', createDocumentSchema), async (c) => {
-  const db = drizzle(c.env.DB);
-  const userId = c.get('userId')!;
-  const { title, content } = c.req.valid('json');
-
-  try {
-    const result = await db
+    await db
       .insert(documents)
       .values({
-        userId,
-        title,
-        content,
+        id: crypto.randomUUID(),
+        project_id,
+        google_doc_id,
+        doc_type,
+        version_number: nextVersion,
       })
-      .returning();
+      .run();
 
-    return c.json({ document: result[0] }, 201);
-  } catch (error) {
-    console.error('Error creating document:', error);
-    return c.json({ error: 'Failed to create document' }, 500);
+    Logger.info(c.env.DB, c.executionCtx, "api/docs", `Successfully linked doc as v${nextVersion}`);
+    return c.json({ success: true, version: nextVersion });
+  } catch (error: any) {
+    Logger.error(c.env.DB, c.executionCtx, "api/docs", "Failed to link document", {
+      error: error.message,
+    });
+    return c.json({ error: "Failed to link document" }, 500);
   }
 });
 
-// GET /api/documents/:id
-documentsRouter.get('/:id', async (c) => {
-  const db = drizzle(c.env.DB);
-  const userId = c.get('userId')!;
-  const documentId = parseInt(c.req.param('id'));
-
-  try {
-    const documentResult = await db
-      .select()
-      .from(documents)
-      .where(eq(documents.id, documentId))
-      .limit(1);
-
-    if (documentResult.length === 0) {
-      return c.json({ error: 'Document not found' }, 404);
-    }
-
-    const document = documentResult[0];
-
-    if (document.userId !== userId) {
-      return c.json({ error: 'Unauthorized' }, 403);
-    }
-
-    return c.json({ document });
-  } catch (error) {
-    console.error('Error fetching document:', error);
-    return c.json({ error: 'Failed to fetch document' }, 500);
-  }
-});
-
-// PUT /api/documents/:id
-documentsRouter.put('/:id', zValidator('json', createDocumentSchema), async (c) => {
-  const db = drizzle(c.env.DB);
-  const userId = c.get('userId')!;
-  const documentId = parseInt(c.req.param('id'));
-  const { title, content } = c.req.valid('json');
-
-  try {
-    // Verify ownership
-    const documentResult = await db
-      .select()
-      .from(documents)
-      .where(eq(documents.id, documentId))
-      .limit(1);
-
-    if (documentResult.length === 0 || documentResult[0].userId !== userId) {
-      return c.json({ error: 'Document not found' }, 404);
-    }
-
-    // Update document
-    const result = await db
-      .update(documents)
-      .set({
-        title,
-        content,
-        updatedAt: new Date(),
-      })
-      .where(eq(documents.id, documentId))
-      .returning();
-
-    return c.json({ document: result[0] });
-  } catch (error) {
-    console.error('Error updating document:', error);
-    return c.json({ error: 'Failed to update document' }, 500);
-  }
-});
-
-// DELETE /api/documents/:id
-documentsRouter.delete('/:id', async (c) => {
-  const db = drizzle(c.env.DB);
-  const userId = c.get('userId')!;
-  const documentId = parseInt(c.req.param('id'));
-
-  try {
-    // Verify ownership
-    const documentResult = await db
-      .select()
-      .from(documents)
-      .where(eq(documents.id, documentId))
-      .limit(1);
-
-    if (documentResult.length === 0 || documentResult[0].userId !== userId) {
-      return c.json({ error: 'Document not found' }, 404);
-    }
-
-    await db.delete(documents).where(eq(documents.id, documentId));
-
-    return c.json({ message: 'Document deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting document:', error);
-    return c.json({ error: 'Failed to delete document' }, 500);
-  }
-});
-
-export { documentsRouter };
+export default docsApp;
