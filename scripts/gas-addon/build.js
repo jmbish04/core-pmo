@@ -7,9 +7,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const SRC_DIR = path.join(__dirname, '../src');
-const DIST_DIR = path.join(__dirname, '../dist');
-const CLASP_CONFIG_PATH = path.join(__dirname, '../.clasp.json');
+const SRC_DIR = path.join(__dirname, '../../gas-addon/src');
+const DIST_DIR = path.join(__dirname, '../../gas-addon/dist');
+const CLASP_CONFIG_PATH = path.join(__dirname, '../../gas-addon/.clasp.json');
 
 // Supported Apps Script extensions
 const SUPPORTED_EXTENSIONS = ['.js', '.gs', '.html', '.json'];

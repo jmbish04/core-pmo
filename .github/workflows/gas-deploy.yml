@@ -21,9 +21,11 @@ jobs:
           cd gas-addon
           pnpm install
       - name: Create clasprc.json
+        env:
+          CLASPRC_JSON_RAW: ${{ secrets.CLASPRC_JSON }}
         run: |
-          if [ -n "${{ secrets.CLASPRC_JSON }}" ]; then
-            echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
+          if [ -n "$CLASPRC_JSON_RAW" ]; then
+            python scripts/gas-addon/setup-clasp.py
           else
             echo "Skipping clasprc.json creation, secret is empty"
           fi
@@ -31,15 +33,15 @@ jobs:
         run: |
           cd gas-addon
           if [ -n "${{ secrets.GAS_SCRIPT_ID }}" ]; then
-            echo "{\"scriptId\":\"${{ secrets.GAS_SCRIPT_ID }}\",\"rootDir\":\".\"}" > .clasp.json
+            echo "{\"scriptId\":\"${{ secrets.GAS_SCRIPT_ID }}\",\"rootDir\":\"dist\"}" > .clasp.json
           else
             echo "Skipping .clasp.json creation, secret is empty"
           fi
-      - name: Push to GAS
+      - name: Build and Push to GAS
         run: |
-          cd gas-addon
-          if [ -f ~/.clasprc.json ] && [ -f .clasp.json ]; then
-            pnpm run push
+          if [ -f ~/.clasprc.json ] && [ -f gas-addon/.clasp.json ]; then
+            pnpm run gas:build
+            pnpm run gas:deploy
           else
             echo "Missing clasp configuration. Skipping push."
           fi

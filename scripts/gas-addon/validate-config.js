@@ -6,7 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SRC_DIR = path.join(__dirname, '../src');
+const SRC_DIR = path.join(__dirname, '../../gas-addon/src');
 const CONFIG_PATH = path.join(SRC_DIR, 'config/environment.js');
 const SUPPORTED_EXTENSIONS = ['.js', '.gs', '.html'];
 

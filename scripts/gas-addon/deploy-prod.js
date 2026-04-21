@@ -25,11 +25,11 @@ function deploy() {
 
   // 1. Sync local changes to Apps Script (includes build flattener)
   console.log('📦 Syncing files with clasp push...');
-  run('npm run push');
+  run('pnpm run gas:push');
 
   // 2. Resolve the Production Deployment ID
   console.log('🔍 Locating PROD_WEB_APP deployment...');
-  const deploymentsOutput = run('npx clasp deployments');
+  const deploymentsOutput = run('cd gas-addon && npx clasp deployments');
   
   // Parse for the specific production tag
   const prodLine = deploymentsOutput.split('\n').find(line => line.includes('PROD_WEB_APP'));
@@ -52,7 +52,7 @@ function deploy() {
 
   // 3. Execute the update
   console.log('⚡ Updating deployment version...');
-  run(`npx clasp deploy -i ${deployId} -d "PROD_WEB_APP"`);
+  run(`cd gas-addon && npx clasp deploy -i ${deployId} -d "PROD_WEB_APP"`);
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
   console.log('\n-------------------------------------------------------------------');

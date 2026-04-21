@@ -4,7 +4,13 @@
     "baseUrl": ".",
     "types": ["@cloudflare/workers-types"],
     "paths": {
-      "@/*": ["src/frontend/*", "src/backend/*"]
+      "@/*": ["src/*"],
+      "@backend/*": ["src/backend/*"],
+      "@frontend/*": ["src/frontend/*"],
+      "@db/*": ["src/backend/db/*"],
+      "@components/*": ["src/frontend/components/*"],
+      "@hooks/*": ["src/frontend/hooks/*"],
+      "@lib/*": ["src/backend/lib/*", "src/frontend/lib/*"]
     }
   },
   "include": [".astro/types.d.ts", "src/**/*", "worker-configuration.d.ts"]
