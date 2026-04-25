@@ -2,11 +2,11 @@
   "name": "gas-addon",
   "version": "1.0.0",
   "description": "Google Apps Script project managed with clasp",
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
     "push": "clasp push -f"
   },
   "devDependencies": {
     "@google/clasp": "^2.4.2"
-  },
-  "packageManager": "pnpm@9.15.4"
+  }
 }

@@ -4,15 +4,15 @@
  * Implements numeric prefixing to enforce Google Apps Script execution order
  * and updates .clasp.json with the generated file sequence.
  */
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-const SRC_DIR = path.join(__dirname, "../../gas-addon/src");
-const DIST_DIR = path.join(__dirname, "../../gas-addon/dist");
-const CLASP_CONFIG_PATH = path.join(__dirname, "../../gas-addon/.clasp.json");
+const SRC_DIR = path.join(__dirname, '../../gas-addon/src');
+const DIST_DIR = path.join(__dirname, '../../gas-addon/dist');
+const CLASP_CONFIG_PATH = path.join(__dirname, '../../gas-addon/.clasp.json');
 
 // Supported Apps Script extensions
-const SUPPORTED_EXTENSIONS = [".js", ".gs", ".html", ".json"];
+const SUPPORTED_EXTENSIONS = ['.js', '.gs', '.html', '.json'];
 
 /**
  * Define Rank Tiers for ordering (lower numbers load first in GAS compiler)
@@ -20,14 +20,14 @@ const SUPPORTED_EXTENSIONS = [".js", ".gs", ".html", ".json"];
  * - Exact matches take precedence.
  */
 const TIER_MAP = {
-  "config/environment.js": 0, // Global CONFIG initialization
-  "config/": 10, // Configuration helpers
-  "utils/shared.js": 20, // Base utilities (_redactUrl, etc)
-  "utils/": 30, // Logging and secondary utils
-  "services/agentConfig.js": 40, // AI Schemas and System Prompts
-  "services/": 50, // Service logic and integrations
-  "api/": 60, // Handlers and HTTP entry points
-  manifest: -1, // appsscript.json must be root-level
+  'config/environment.js': 0,    // Global CONFIG initialization
+  'config/': 10,                 // Configuration helpers
+  'utils/shared.js': 20,         // Base utilities (_redactUrl, etc)
+  'utils/': 30,                  // Logging and secondary utils
+  'services/agentConfig.js': 40, // AI Schemas and System Prompts
+  'services/': 50,               // Service logic and integrations
+  'api/': 60,                    // Handlers and HTTP entry points
+  'manifest': -1                 // appsscript.json must be root-level
 };
 
 /**
@@ -37,7 +37,7 @@ function getFileTier(relativeTrace) {
   if (TIER_MAP[relativeTrace] !== undefined) return TIER_MAP[relativeTrace];
 
   for (const key in TIER_MAP) {
-    if (key.endsWith("/") && relativeTrace.startsWith(key)) {
+    if (key.endsWith('/') && relativeTrace.startsWith(key)) {
       return TIER_MAP[key];
     }
   }
@@ -46,7 +46,7 @@ function getFileTier(relativeTrace) {
 }
 
 function flatten() {
-  console.log("🏗️  Starting build: Flattening src/ to dist/ with Order Optimization...");
+  console.log('🏗️  Starting build: Flattening src/ to dist/ with Order Optimization...');
 
   // 1. Clean and recreate dist directory
   if (fs.existsSync(DIST_DIR)) {
@@ -59,7 +59,7 @@ function flatten() {
   // 2. Recursive walker to find all files in src/
   function walk(currentPath) {
     const list = fs.readdirSync(currentPath);
-    list.forEach((item) => {
+    list.forEach(item => {
       const fullPath = path.join(currentPath, item);
       const stat = fs.statSync(fullPath);
 
@@ -76,15 +76,15 @@ function flatten() {
   walk(SRC_DIR);
 
   // 3. Map files to tiers and normalize paths
-  const processedFiles = rawFiles.map((filePath) => {
-    const relPath = path.relative(SRC_DIR, filePath).replace(/\\/g, "/");
-    const isManifest = relPath === "appsscript.json";
+  const processedFiles = rawFiles.map(filePath => {
+    const relPath = path.relative(SRC_DIR, filePath).replace(/\\/g, '/');
+    const isManifest = relPath === 'appsscript.json';
     const tier = isManifest ? -1 : getFileTier(relPath);
 
     return {
       fullPath: filePath,
       relPath: relPath,
-      tier: tier,
+      tier: tier
     };
   });
 
@@ -101,16 +101,16 @@ function flatten() {
   processedFiles.forEach((file, index) => {
     let destName;
 
-    if (file.relPath === "appsscript.json") {
-      destName = "appsscript.json";
-    } else if (path.basename(file.relPath) === "index.html") {
-      destName = "index.html";
+    if (file.relPath === 'appsscript.json') {
+      destName = 'appsscript.json';
+    } else if (path.basename(file.relPath) === 'index.html') {
+      destName = 'index.html';
     } else {
       // Flatten path into filename (e.g. config/environment.js -> config_environment.js)
-      const pathId = file.relPath.replace(/\//g, "_");
+      const pathId = file.relPath.replace(/\//g, '_');
 
       // Format index with leading zeros (e.g. 000, 001...) to ensure alphabetical correctness
-      const prefix = index.toString().padStart(3, "0");
+      const prefix = index.toString().padStart(3, '0');
       destName = `${prefix}_${pathId}`;
     }
 
@@ -125,17 +125,15 @@ function flatten() {
     copiedFiles.add(destName);
     finalFileOrder.push(destName);
 
-    console.log(
-      `   ✅ Ordered: [Tier ${file.tier.toString().padStart(3, " ")}] ${file.relPath} -> ${destName}`,
-    );
+    console.log(`   ✅ Ordered: [Tier ${file.tier.toString().padStart(3, ' ')}] ${file.relPath} -> ${destName}`);
   });
 
   // 6. Programmatically update .clasp.json with the generated fileOrder
   if (fs.existsSync(CLASP_CONFIG_PATH)) {
     try {
-      const claspConfig = JSON.parse(fs.readFileSync(CLASP_CONFIG_PATH, "utf8"));
+      const claspConfig = JSON.parse(fs.readFileSync(CLASP_CONFIG_PATH, 'utf8'));
       claspConfig.fileOrder = finalFileOrder;
-      fs.writeFileSync(CLASP_CONFIG_PATH, JSON.stringify(claspConfig, null, 2), "utf8");
+      fs.writeFileSync(CLASP_CONFIG_PATH, JSON.stringify(claspConfig, null, 2), 'utf8');
       console.log(`📝 Updated .clasp.json with fileOrder (${finalFileOrder.length} files).`);
     } catch (e) {
       console.warn(`⚠️  Failed to update .clasp.json: ${e.message}`);
