@@ -5,14 +5,14 @@
  * Ensures the build is flattened, pushed, and the 'PROD_WEB_APP' deployment is updated.
  */
 
-const { execSync } = require('child_process');
+const { execSync } = require("child_process");
 
 /**
  * Executes a shell command and returns the output string.
  */
 function run(command) {
   try {
-    return execSync(command, { encoding: 'utf8', stdio: ['inherit', 'pipe', 'inherit'] }).trim();
+    return execSync(command, { encoding: "utf8", stdio: ["inherit", "pipe", "inherit"] }).trim();
   } catch (e) {
     console.error(`❌ Execution failed: ${command}`);
     process.exit(1);
@@ -21,47 +21,47 @@ function run(command) {
 
 function deploy() {
   const startTime = Date.now();
-  console.log('🚀 Starting Production Deployment...');
+  console.log("🚀 Starting Production Deployment...");
 
   // 1. Sync local changes to Apps Script (includes build flattener)
-  console.log('📦 Syncing files with clasp push...');
-  run('pnpm run gas:push');
+  console.log("📦 Syncing files with clasp push...");
+  run("pnpm run gas:push");
 
   // 2. Resolve the Production Deployment ID
-  console.log('🔍 Locating PROD_WEB_APP deployment...');
-  const deploymentsOutput = run('cd gas-addon && npx clasp deployments');
-  
+  console.log("🔍 Locating PROD_WEB_APP deployment...");
+  const deploymentsOutput = run("cd gas-addon && npx clasp deployments");
+
   // Parse for the specific production tag
-  const prodLine = deploymentsOutput.split('\n').find(line => line.includes('PROD_WEB_APP'));
+  const prodLine = deploymentsOutput.split("\n").find((line) => line.includes("PROD_WEB_APP"));
 
   if (!prodLine) {
     console.error('\n❌ ERROR: No deployment with description "PROD_WEB_APP" found.');
-    console.error('Check your deployments with: npx clasp deployments');
+    console.error("Check your deployments with: npx clasp deployments");
     process.exit(1);
   }
 
   // Extract ID (usually the second item in the list: "- [ID] @[Version] - [Description]")
   const deployId = prodLine.split(/\s+/)[1];
-  
+
   if (!deployId) {
-    console.error('❌ ERROR: Could not parse Deployment ID from line:', prodLine);
+    console.error("❌ ERROR: Could not parse Deployment ID from line:", prodLine);
     process.exit(1);
   }
 
   console.log(`✅ Found Production Deployment: ${deployId}`);
 
   // 3. Execute the update
-  console.log('⚡ Updating deployment version...');
+  console.log("⚡ Updating deployment version...");
   run(`cd gas-addon && npx clasp deploy -i ${deployId} -d "PROD_WEB_APP"`);
 
-  const fs = require('fs');
-  const path = require('path');
-  let scriptId = 'UNKNOWN';
+  const fs = require("fs");
+  const path = require("path");
+  let scriptId = "UNKNOWN";
   try {
     // Determine the scriptId for the Edit URL
-    const claspJsonPath = path.resolve(__dirname, '../../gas-addon/.clasp.json');
+    const claspJsonPath = path.resolve(__dirname, "../../gas-addon/.clasp.json");
     if (fs.existsSync(claspJsonPath)) {
-      const parsed = JSON.parse(fs.readFileSync(claspJsonPath, 'utf8'));
+      const parsed = JSON.parse(fs.readFileSync(claspJsonPath, "utf8"));
       if (parsed.scriptId) scriptId = parsed.scriptId;
     }
   } catch (e) {
@@ -69,15 +69,15 @@ function deploy() {
   }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-  console.log('\n-------------------------------------------------------------------');
-  console.log('🎉 DEPLOYMENT SUCCESSFUL');
+  console.log("\n-------------------------------------------------------------------");
+  console.log("🎉 DEPLOYMENT SUCCESSFUL");
   console.log(`🆔 Web App Deployment Id: ${deployId}`);
   console.log(`🔗 Web App URL: https://script.google.com/macros/s/${deployId}/exec`);
-  if (scriptId !== 'UNKNOWN') {
+  if (scriptId !== "UNKNOWN") {
     console.log(`✏️  Edit URL: https://script.google.com/d/${scriptId}/edit`);
   }
   console.log(`⏱️  Time: ${elapsed}s`);
-  console.log('-------------------------------------------------------------------\n');
+  console.log("-------------------------------------------------------------------\n");
 }
 
 deploy();
