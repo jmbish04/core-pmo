@@ -155,7 +155,7 @@ const handler: ExportedHandler<Bindings> = {
     if (
       url.pathname.startsWith("/api/") ||
       url.pathname === "/openapi.json" ||
-      url.pathname === "/swagger"
+      url.pathname.startsWith("/swagger")
     ) {
       return honoApp.fetch(request, env, ctx);
     }
