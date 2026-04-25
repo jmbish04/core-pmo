@@ -4,7 +4,7 @@
     "baseUrl": ".",
     "types": ["@cloudflare/workers-types", "worker-configuration.d.ts"],
     "paths": {
-      "@/*": ["src/*"],
+      "@/*": ["src/frontend/*"],
       "@backend/*": ["src/backend/*"],
       "@frontend/*": ["src/frontend/*"],
       "@db/*": ["src/backend/db/*"],
