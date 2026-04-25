@@ -39,6 +39,12 @@
       "migrations_dir": "drizzle",
     },
   ],
+  "kv_namespaces": [
+    {
+      "binding": "SESSIONS", //for astro.config.ts
+      "id": "a973673ac98b43fcb211c9f263fd1154",
+    }
+  ],
   "secrets_store_secrets": [
     {
       "binding": "GITHUB_TOKEN",
