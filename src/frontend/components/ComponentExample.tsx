@@ -41,9 +41,9 @@ import {
   AlertDialogMedia,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+} from "@frontend/components/ui/alert-dialog";
+import { Badge } from "@frontend/components/ui/badge";
+import { Button } from "@frontend/components/ui/button";
 import {
   Card,
   CardAction,
@@ -52,7 +52,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@frontend/components/ui/card";
 import {
   Combobox,
   ComboboxContent,
@@ -60,7 +60,7 @@ import {
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-} from "@/components/ui/combobox";
+} from "@frontend/components/ui/combobox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -77,9 +77,9 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+} from "@frontend/components/ui/dropdown-menu";
+import { Field, FieldGroup, FieldLabel } from "@frontend/components/ui/field";
+import { Input } from "@frontend/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -87,9 +87,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+} from "@frontend/components/ui/select";
+import { Textarea } from "@frontend/components/ui/textarea";
+import { cn } from "@frontend/lib/utils";
 
 export function ComponentExample() {
   return (

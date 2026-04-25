@@ -30,7 +30,7 @@ function deploy() {
   // 2. Resolve the Production Deployment ID
   console.log('🔍 Locating PROD_WEB_APP deployment...');
   const deploymentsOutput = run('cd gas-addon && npx clasp deployments');
-  
+
   // Parse for the specific production tag
   const prodLine = deploymentsOutput.split('\n').find(line => line.includes('PROD_WEB_APP'));
 
@@ -42,7 +42,7 @@ function deploy() {
 
   // Extract ID (usually the second item in the list: "- [ID] @[Version] - [Description]")
   const deployId = prodLine.split(/\s+/)[1];
-  
+
   if (!deployId) {
     console.error('❌ ERROR: Could not parse Deployment ID from line:', prodLine);
     process.exit(1);
