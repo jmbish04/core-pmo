@@ -1,7 +1,7 @@
 {
-  "name": "core-template-cfw-assets-astro-shadcn",
-  "main": "dist/_worker.js/index.js",
-  "compatibility_date": "2026-03-09",
+  "name": "core-pmo",
+  "main": "dist/_worker.js",
+  "compatibility_date": "2026-04-09",
   "compatibility_flags": ["nodejs_compat"],
   "upload_source_maps": true,
   "workers_dev": true,
@@ -33,9 +33,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "core-template-cfw-assets-astro-shadcn",
-      "database_id": "d126139f-6f57-49d2-bbc4-d20bbd46bbf4",
-      "preview_database_id": "d126139f-6f57-49d2-bbc4-d20bbd46bbf4",
+      "database_name": "core-pmo",
+      "database_id": "c02c0f98-004e-4e9b-8c0a-524d00e52a92",
       "migrations_dir": "drizzle",
     },
   ],
