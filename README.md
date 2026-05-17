@@ -109,7 +109,7 @@ Depending on your application's focus, you'll need a subset of these keys bound 
 | `CLOUDFLARE_API_TOKEN`  | API token for Cloudflare resource access               | Local / Prod |
 | `OPENAI_API_KEY`        | Key for OpenAI models                                  | Optional     |
 | `ANTHROPIC_API_KEY`     | Key for Anthropic Claude models                        | Optional     |
-| `GEMINI_API_KEY`        | Key for Google Gemini models                           | Optional     |
+| `GEMINI_API_KEY` (binding) / `GOOGLE_API_KEY` (secret) | Key for Google Gemini models               | Optional     |
 | `WORKER_API_KEY`        | Shared secret for internal API auth                    | Prod         |
 
 ---
@@ -155,7 +155,7 @@ const handler: ExportedHandler<Bindings> = {
     if (
       url.pathname.startsWith("/api/") ||
       url.pathname === "/openapi.json" ||
-      url.pathname === "/swagger"
+      url.pathname.startsWith("/swagger")
     ) {
       return honoApp.fetch(request, env, ctx);
     }
