@@ -18,17 +18,9 @@ export default defineConfig({
     platformProxy: {
       enabled: true,
     },
-    // Explicitly define session binding name if needed, defaults to SESSION
-    sessionKVBindingName: "SESSION",
   }),
   integrations: [react()],
   vite: {
     plugins: [tailwindcss()],
-    resolve: {
-      // Ensure Vite respects the path aliases if standard resolution fails
-      alias: {
-        "@": "/src/frontend",
-      },
-    },
   },
 });

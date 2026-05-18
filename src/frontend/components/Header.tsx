@@ -1,14 +1,14 @@
 import { HomeIcon } from "lucide-react";
 import * as React from "react";
 
-import { Icons } from "@/components/Icons";
-import { MainNav } from "@/components/MainNav";
-import { MobileNav } from "@/components/MobileNav";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { buttonVariants } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { siteConfig } from "@/lib/config";
-import { cn } from "@/lib/utils";
+import { Icons } from "@frontend/components/Icons";
+import { MainNav } from "@frontend/components/MainNav";
+import { MobileNav } from "@frontend/components/MobileNav";
+import { ThemeToggle } from "@frontend/components/ThemeToggle";
+import { buttonVariants } from "@frontend/components/ui/button";
+import { Separator } from "@frontend/components/ui/separator";
+import { siteConfig } from "@frontend/lib/config";
+import { cn } from "@frontend/lib/utils";
 
 export function Header() {
   const [starCount, setStarCount] = React.useState<string>("—");

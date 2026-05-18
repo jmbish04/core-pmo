@@ -1,4 +1,4 @@
-import { siteConfig } from "@/lib/config";
+import { siteConfig } from "@frontend/lib/config";
 
 export function Footer() {
   return (
